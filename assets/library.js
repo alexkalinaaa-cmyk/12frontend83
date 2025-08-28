@@ -1803,6 +1803,13 @@
       // Add date with underscores
       filename += currentDate.replace(/-/g, '_');
       
+      // Add unique timestamp to ensure each PDF is unique (HH-MM-SS)
+      const now = new Date();
+      const timestamp = now.getHours().toString().padStart(2, '0') + '-' +
+                       now.getMinutes().toString().padStart(2, '0') + '-' +
+                       now.getSeconds().toString().padStart(2, '0');
+      filename += '_' + timestamp;
+      
       // Add .pdf extension
       filename += '.pdf';
       
