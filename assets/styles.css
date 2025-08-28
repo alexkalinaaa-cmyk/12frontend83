@@ -350,7 +350,6 @@ img {
 .pin-indicator { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -55%); z-index: 10; pointer-events: none; 
   /* Ensure pin is properly sized - updated for 1.2x scale */
   width: 35px; height: 46px;
-  background: #3b82f6; padding: 2px; border-radius: 50%;
 }
 
 @keyframes pulse-border {

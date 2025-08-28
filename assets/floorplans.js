@@ -1668,9 +1668,12 @@
     trayCard.dataset.cardId = card.id;
     
     const cardType = card.type || 'image';
+    const pinIndicatorHTML = linkedPin ? createPinIndicatorHTML(linkedPin) : '';
+    
     trayCard.innerHTML = `
-      <div class="tray-card-image">
+      <div class="tray-card-image${linkedPin ? ' has-pin' : ''}">
         ${cardType === 'image' ? `<img src="${card.url || card.baseUrl}" alt="Card">` : '📝'}
+        ${pinIndicatorHTML}
       </div>
       <div class="tray-card-info">
         <div class="tray-card-meta">${linkedPin ? 'Linked' : 'Available'}</div>
