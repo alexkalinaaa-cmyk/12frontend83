@@ -4603,13 +4603,8 @@
           alert(message + '\n\nYou can enter the address manually in the location field.');
           locateBtn.textContent = '📍 Locate';
           locateBtn.disabled = false;
-        },
-        {
-          timeout: 15000,           // Reasonable timeout
-          enableHighAccuracy: true,
-          maximumAge: 60000         // Allow 1-minute cached location for efficiency
         }
-      );
+      }
     });
   }
 
