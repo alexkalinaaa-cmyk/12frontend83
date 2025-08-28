@@ -1196,7 +1196,7 @@
       // Add separator line except after the last item
       if (i < names.length - 1) {
         const separator = document.createElement("div");
-        separator.style.cssText = "height: 1px; background: var(--border); margin: 12px 0; opacity: 0.5;";
+        separator.style.cssText = "height: 3px; background: #444444; margin: 16px 0; opacity: 0.8; border-radius: 2px;";
         UI.unifiedList.appendChild(separator);
       }
     }
@@ -4614,7 +4614,7 @@
         locateBtn.textContent = '📍 Locate';
         locateBtn.disabled = false;
       } catch (error) {
-          console.error('Geolocation error:', error);
+          console.log('Geolocation permission handled:', error.code === 1 ? 'Permission denied' : `Error ${error.code}`);
           
           let message;
           switch(error.code) {
