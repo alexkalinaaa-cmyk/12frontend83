@@ -1457,24 +1457,26 @@
         // Remove dragging class without full re-render to avoid image flicker
         d.classList.remove("dragging");
         // Clear any remaining drag state classes
-        document.querySelectorAll(".thumb.dragging, .thumb.drop-target").forEach(el => {
-          el.classList.remove("dragging", "drop-target");
+        document.querySelectorAll(".thumb.dragging, .thumb.drop-target, .thumb.swap-target").forEach(el => {
+          el.classList.remove("dragging", "drop-target", "swap-target");
         });
       });
 
-      // Add card-to-card reordering functionality (simple swapping)
+      // Add card-to-card reordering functionality with swap arrows
       d.addEventListener("dragover", function(e){
         e.preventDefault();
         
-        // Clean previous placeholders
-        document.querySelectorAll("#cards-bucket .placeholder").forEach(el => el.classList.remove("placeholder"));
+        // Clean previous drag targets
+        document.querySelectorAll("#cards-bucket .placeholder, #cards-bucket .swap-target").forEach(el => {
+          el.classList.remove("placeholder", "swap-target");
+        });
         
-        // Add placeholder styling
-        d.classList.add("placeholder");
+        // Add swap-target styling with red arrows
+        d.classList.add("swap-target");
       });
 
       d.addEventListener("dragleave", function(e){
-        d.classList.remove("placeholder");
+        d.classList.remove("placeholder", "swap-target");
       });
 
       d.addEventListener("drop", function(e){
@@ -3052,9 +3054,9 @@
           // Calculate DYNAMIC max lines based on actual available space in the box
           const lineHeight = 12;
           const headerSpace = 30; // Space for item header
-          const padding = 16; // Top and bottom padding combined  
+          const padding = 12; // Reduced padding for more text space
           const availableTextHeight = dynamicHeight - headerSpace - padding;
-          const maxLinesInBox = Math.floor(availableTextHeight / lineHeight);
+          const maxLinesInBox = Math.floor(availableTextHeight / lineHeight) + 1; // Add 1 line tolerance
           
           console.log(`[TextSplit] Dynamic max lines calculation: boxHeight=${dynamicHeight}, available=${availableTextHeight}, maxLines=${maxLinesInBox}`);
           
@@ -4539,9 +4541,15 @@
       locateBtn.textContent = '⏳ Getting location...';
       locateBtn.disabled = true;
 
-      // High-precision geolocation with watchPosition for better accuracy
+      // Fast, single-attempt geolocation
       try {
-        const position = await getPrecisePosition({ desiredAccuracy: 50, hardTimeoutMs: 15000 });
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 5000  // Fast 5-second timeout
+          });
+        });
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         const accuracy = position.coords.accuracy; // meters
@@ -4552,8 +4560,8 @@
           // Single geocoding call - no coordinate variations to reduce API calls
           const address = await reverseGeocodeEnhanced(lat, lng);
           
-          // If accuracy is poor (>50m), show warning and allow manual editing
-          if (accuracy > 50) {
+          // If accuracy is poor (>100m), show warning and allow manual editing
+          if (accuracy > 100) {
             locationInput.value = `${address} (±${Math.round(accuracy)}m - please verify)`;
             alert(`⚠️ GPS accuracy is ${Math.round(accuracy)} meters. Please verify the address is correct and edit if needed.`);
           } else {
@@ -4873,9 +4881,9 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Set crop dimensions - adjusted for better horizontal fit
-            const cropWidth = 1116; // Reduced by 12px from right edge 
-            const cropHeight = 704;  // Reduced by 1px total (0.5px top + 0.5px bottom)
+            // Set crop dimensions - adjusted for tighter pin bounds
+            const cropWidth = 1106; // Reduced by 10px total (5px left + 5px right)
+            const cropHeight = 703;  // Reduced by 1px from top
             
             // Final canvas size - dramatically increased for ultra-high quality in PDF export
             const dpr = Math.max(3, window.devicePixelRatio || 1); // Force at least 3x resolution
@@ -4896,9 +4904,9 @@
               const pinX = pin.x * imgWidth;
               const pinY = pin.y * imgHeight;
               
-              // Calculate crop area (centered on pin, shifted 4px left for better framing)
-              const cropX = pinX - cropWidth / 2 - 4; // Shift 4px left to remove from left edge
-              const cropY = pinY - cropHeight / 2;
+              // Calculate crop area (centered on pin, adjusted for tighter bounds)
+              const cropX = pinX - cropWidth / 2 + 5; // Shift 5px right to crop from left edge
+              const cropY = pinY - cropHeight / 2 + 1; // Shift 1px down to crop from top
               
               // Ensure crop area is within image bounds
               const adjustedCropX = Math.max(0, Math.min(imgWidth - cropWidth, cropX));
