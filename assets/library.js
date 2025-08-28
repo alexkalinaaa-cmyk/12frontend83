@@ -4605,7 +4605,7 @@
           locateBtn.disabled = false;
         }
       });
-    });
+  }
 
 
   window.addEventListener("load", async function(){
