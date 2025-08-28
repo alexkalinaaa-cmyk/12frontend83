@@ -4,13 +4,11 @@
   const on = (el, ev, fn, opts) => { if(el) el.addEventListener(ev, fn, opts||false); };
 
   const UI = {
-    root: $("#library-overlay"),
-    btnOpen: $("#btn-library"),
-    btnClose: $("#lib-close"),
+    btnFloorplans: $("#btn-floorplans"), // Changed from btn-library
     btnCreate: $("#job-create"),
-    btnClearData: $("#lib-clear-data"),
+    btnClearData: $("#clear-all-data"), // Changed to new bottom-right button
     unifiedList: $("#unified-list"),
-    bucket: $("#cards-bucket"),
+    bucket: $("#board"), // Changed from cards-bucket to board
     pdfBucket: $("#pdf-bucket"),
     btnExport: $("#lib-export")
   };
@@ -4438,31 +4436,42 @@
     await deleteReportAndJobName(reportId);
   }
 
-  // Initialize
-  async function __showLibrary(){ 
-    if(!UI.root) return; 
-    UI.root.removeAttribute("hidden"); 
-    document.body.classList.add("modal-open"); 
-    window.__libOpen = true; 
+  // Initialize workspace (no modal needed)
+  async function initializeWorkspace(){ 
     await renderUnifiedList(); 
     await renderCards(); 
     await renderPDFCards();
     updateStorageIndicator();
   }
 
-  on(UI.btnOpen, "click", __showLibrary);
-  window.showLibrary = __showLibrary;
-  window.addEventListener("keydown", function(e){ 
-    if((e.metaKey||e.ctrlKey) && (e.key||"").toLowerCase()==="l"){ 
-      e.preventDefault(); 
-      __showLibrary(); 
+  // Wire up Floor Plans button to open Floor Plans modal directly
+  on(UI.btnFloorplans, "click", function() {
+    const floorplansOverlay = document.getElementById('floorplans-archivum-overlay');
+    if (floorplansOverlay) {
+      // Update job ID header
+      const reportIdDisplay = document.getElementById('floorplans-report-id');
+      const currentJobId = getCur();
+      if (reportIdDisplay && currentJobId) {
+        reportIdDisplay.textContent = `Working in Report ID: ${currentJobId}`;
+      }
+      
+      floorplansOverlay.removeAttribute('hidden');
+      
+      // Initialize floor plans if needed
+      if (window.FloorPlans && typeof window.FloorPlans.initializeFloorPlans === 'function') {
+        window.FloorPlans.initializeFloorPlans();
+      }
     }
   });
 
-  on(UI.btnClose, "click", function(){ 
-    UI.root.setAttribute("hidden",""); 
-    document.body.classList.remove("modal-open"); 
-    window.__libOpen = false; 
+  // Initialize workspace on page load
+  window.showLibrary = initializeWorkspace;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeWorkspace);
+  } else {
+    // DOM already loaded
+    setTimeout(initializeWorkspace, 100);
+  } 
   });
 
   on(UI.btnClearData, "click", async function(){
@@ -4854,20 +4863,7 @@
     return { r, g, b };
   }
   
-  // Floor Plans/Archivum Modal Event Handlers
-  on(document.getElementById('lib-floorplans'), 'click', function() {
-    const floorplansOverlay = document.getElementById('floorplans-archivum-overlay');
-    if (floorplansOverlay) {
-      // Update job ID header
-      const reportIdDisplay = document.getElementById('floorplans-report-id');
-      const currentJobId = getCur();
-      if (reportIdDisplay && currentJobId) {
-        reportIdDisplay.textContent = `Working in Report ID: ${currentJobId}`;
-      }
-      
-      floorplansOverlay.removeAttribute('hidden');
-    }
-  });
+  // Floor Plans/Archivum Modal Event Handlers - REMOVED (now handled by btn-floorplans)
   
   on(document.getElementById('floorplans-close'), 'click', function() {
     // Check if floor plan is currently uploading

@@ -1559,7 +1559,7 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
       tile.appendChild(img);
     }
     
-    const del=document.createElement("button"); del.className="del"; del.textContent="×";
+    const del=document.createElement("button"); del.className="card-delete"; del.textContent="×";
     del.addEventListener("click", async function(e){
       e.stopPropagation();
       const jid = Library.getCur(); if(!jid) return;
@@ -1567,7 +1567,15 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
       if(window.AppBoard) await AppBoard.clearAndRenderFrom(jid);
     });
     tile.appendChild(del);
-    tile.addEventListener("click", function(){ if(window.__libOpen) return; openEditor(tile); });
+    
+    // Add click-to-open functionality
+    tile.addEventListener("click", function(e) {
+      // Don't open if clicking delete button
+      if (e.target.classList.contains('card-delete')) return;
+      
+      // Open annotation editor for this item
+      openEditor(tile);
+    });
     return tile;
   }
   

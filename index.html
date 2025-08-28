@@ -111,7 +111,7 @@
   <div class="actions">
     <button id="btn-notes" class="btn" title="Create Note">📝 Notes</button>
     <button id="btn-settings" class="btn" title="Author Info">⚙ Author Info</button>
-    <button id="btn-library" class="btn btn-blue" title="Open Reports">Reports</button>
+    <button id="btn-floorplans" class="btn btn-blue" title="Floor Plans/Archivum">Floor Plans/Archivum</button>
     <button id="btn-sign" class="btn" title="Sign">Sign</button>
   </div>
 </header>
@@ -119,15 +119,57 @@
 <div id="err" class="err" hidden></div>
 
 <main class="wrap">
-  <section class="board-wrap">
-    <label class="add-tile" id="add-tile">
-      <input id="file-input" type="file" accept="image/*" multiple hidden>
-      <div class="plus">＋</div>
-      <div class="add-text">Add Images</div>
-      <div class="hint">Tap to select (or drop files anywhere)</div>
-    </label>
-    <div id="board" class="board" aria-label="Image board"></div>
-  </section>
+  <div class="workspace-grid">
+    <!-- Left Sidebar: Report Names -->
+    <aside class="reports-sidebar">
+      <div class="sidebar-header">
+        <h3 class="sidebar-title">Report Names</h3>
+        <button id="job-create" class="btn btn-green btn-small">New Report</button>
+      </div>
+      <div id="unified-list" class="jobs-list"></div>
+    </aside>
+    
+    <!-- Right Main Area: Cards + Controls -->
+    <main class="workspace-main">
+      <!-- Controls Row -->
+      <div class="workspace-controls">
+        <div class="controls-left">
+          <label class="control-group">
+            Job Code: <input id="job-code" type="text" placeholder="Optional" class="input-small">
+          </label>
+          <div id="storage-indicator" class="storage-indicator" title="Storage Usage">
+            <span id="storage-text">Storage: 0MB</span>
+            <div id="storage-bar" class="storage-bar">
+              <div id="storage-fill" class="storage-fill"></div>
+            </div>
+          </div>
+        </div>
+        <div class="controls-right">
+          <button id="lib-export" class="btn btn-blue">Export PDF</button>
+        </div>
+      </div>
+      
+      <!-- Add Images Tile -->
+      <label class="add-tile add-tile-compact" id="add-tile">
+        <input id="file-input" type="file" accept="image/*" multiple hidden>
+        <div class="plus">＋</div>
+        <div class="add-text">Add Images</div>
+      </label>
+      
+      <!-- Cards Area -->
+      <div id="board" class="board board-compact" aria-label="Image board"></div>
+      
+      <!-- Location Row -->
+      <div class="location-row">
+        <label class="location-control">
+          Location (required): <input id="location-field" type="text" placeholder="Enter location or use locate button" class="location-input">
+        </label>
+        <button id="locate-btn" class="btn">📍 Locate</button>
+      </div>
+      
+      <div class="hint small">Drag cards between Report IDs to move them. Click cards to edit.</div>
+    </main>
+  </div>
 </main>
 
 <!-- Editor Modal -->
@@ -312,54 +354,6 @@
   </section>
 </div>
 
-<!-- Library / Report IDs -->
-<div id="library-overlay" class="overlay" hidden>
-  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="library-title">
-    <header class="bar">
-      <h3 id="library-title" class="title">Reports</h3>
-      <div style="display:flex;gap:8px;">
-        <button id="lib-floorplans" class="btn btn-blue">Floor Plans/Archivum</button>
-        <button id="lib-clear-data" class="btn btn-red" title="Clear all stored data (fixes corruption)">Clear All Data</button>
-        <button id="lib-close" class="btn">Close</button>
-      </div>
-    </header>
-    <div class="content libgrid">
-      <aside class="jobs-pane">
-  <div class="pane-title">Report Names</div>
-  <div id="unified-list" class="jobs-list"></div>
-  <div class="hr"></div>
-  <div class="action-buttons">
-    <button id="job-create" class="btn btn-green">New Report</button>
-  </div>
-</aside>
-      <main class="cards-pane">
-        <div class="cards-header">
-          <div class="pane-title">Cards</div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <label style="display:flex;align-items:center;gap:8px;">
-              Job Code: <input id="job-code" type="text" placeholder="Optional" style="width:120px;padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--fg);font-size:12px;">
-            </label>
-            <div id="storage-indicator" class="storage-indicator" title="Storage Usage">
-              <span id="storage-text">Storage: 0MB</span>
-              <div id="storage-bar" class="storage-bar">
-                <div id="storage-fill" class="storage-fill"></div>
-              </div>
-            </div>
-            <button id="lib-export" class="btn btn-blue">Export PDF</button>
-          </div>
-        </div>
-        <div id="cards-bucket" class="cards-bucket"></div>
-        <div class="location-row" style="display:flex;align-items:center;gap:8px;margin:12px 0;padding:8px;background:var(--bg-soft);border-radius:4px;">
-          <label style="display:flex;align-items:center;gap:8px;flex:1;">
-            Location (required): <input id="location-field" type="text" placeholder="Enter location or use locate button" style="flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg);color:var(--fg);font-size:12px;">
-          </label>
-          <button id="locate-btn" class="btn">📍 Locate</button>
-        </div>
-        <div class="hint small">Drag a card onto a Report ID to move it. Drag within to reorder.</div>
-      </main>
-    </div>
-  </section>
-</div>
 
 <!-- Floor Plans/Archivum Modal -->
 <div id="floorplans-archivum-overlay" class="overlay" hidden>
@@ -400,6 +394,9 @@
     </div>
   </section>
 </div>
+
+<!-- Clear All Data Button - Bottom Right -->
+<button id="clear-all-data" class="btn btn-red clear-all-btn" title="Clear all stored data (fixes corruption)">Clear All Data</button>
 
 </body>
 </html>

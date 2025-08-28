@@ -111,6 +111,7 @@ img {
 .tile.card.note-tile .note-icon { height:140px; flex-shrink:0; }
 .tile.card.note-tile .note-label { height:60px; max-height:60px; overflow:hidden; line-height:1.2; flex-shrink:0; }
 .tile.card .del { position:absolute; top:6px; right:6px; width:26px; height:26px; border-radius:50%; background:#7f1d1d; color:#fff; border:none; cursor:pointer; font-weight:700; line-height:26px; text-align:center; }
+/* Legacy del class - replaced by card-delete in new layout */
 .tile.placeholder { border:2px dashed var(--drag); border-radius:10px; min-height:100px; background:transparent; }
 .board.dragging { outline:none; }
 .tile.card.dragging { opacity:.4; }
@@ -426,4 +427,215 @@ img {
 /* Large tablet landscape (keep only button improvements) */
 @media (min-width: 1024px) {
   /* Reverted: All large size changes removed to prevent scrollbars */
+}
+
+/* ===== NEW WORKSPACE LAYOUT ===== */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  height: calc(100vh - 120px); /* Account for header and some padding */
+  max-height: 600px; /* iPad optimization */
+}
+
+.reports-sidebar {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  min-height: auto;
+  min-width: auto;
+}
+
+.workspace-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.workspace-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+
+.controls-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.input-small {
+  width: 120px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 12px;
+}
+
+.add-tile-compact {
+  height: 80px;
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.add-tile-compact .plus {
+  font-size: 24px;
+}
+
+.add-tile-compact .add-text {
+  font-size: 12px;
+}
+
+.board-compact {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 200px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--panel);
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.location-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.location-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 12px;
+}
+
+/* Clear All Data Button - Bottom Right */
+.clear-all-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1000;
+  padding: 8px 12px;
+  font-size: 12px;
+  min-height: auto;
+  min-width: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Add red X to workspace cards */
+.tile.card {
+  position: relative;
+}
+
+.tile.card .card-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.tile.card .card-delete:hover {
+  opacity: 1;
+  background: #b91c1c;
+}
+
+.tile.card {
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.tile.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 200px 1fr;
+    height: calc(100vh - 100px);
+  }
+  
+  .reports-sidebar {
+    max-height: 200px;
+  }
+  
+  .sidebar-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
 }
