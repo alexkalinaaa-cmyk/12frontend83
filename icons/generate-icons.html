@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons - JL Annotator</title>
+</head>
+<body>
+    <h1>JL Annotator PWA Icon Generator</h1>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <div>
+            <canvas id="canvas180" width="180" height="180" style="border:1px solid #ccc; margin: 5px;"></canvas>
+            <br><button onclick="download('canvas180', 'icon-180.png')">Download 180px (iOS)</button>
+        </div>
+        <div>
+            <canvas id="canvas192" width="192" height="192" style="border:1px solid #ccc; margin: 5px;"></canvas>
+            <br><button onclick="download('canvas192', 'icon-192.png')">Download 192px</button>
+        </div>
+        <div>
+            <canvas id="canvas512" width="512" height="512" style="border:1px solid #ccc; margin: 5px;"></canvas>
+            <br><button onclick="download('canvas512', 'icon-512.png')">Download 512px</button>
+        </div>
+    </div>
+    <br>
+    <button onclick="downloadAll()" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Download All Icons</button>
+
+    <script>
+        // Enhanced JL Annotator icon with better iOS compatibility
+        function generateIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background gradient for professional look
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#1e40af');  // Blue
+            gradient.addColorStop(1, '#111827');  // Dark blue/gray
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Subtle inner shadow/border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = size * 0.01;
+            ctx.strokeRect(size * 0.02, size * 0.02, size * 0.96, size * 0.96);
+            
+            // Main JL text - larger and more prominent
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${size * 0.35}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('JL', size / 2, size * 0.45);
+            
+            // Annotation tools icons - pen and document
+            ctx.strokeStyle = '#60a5fa';
+            ctx.fillStyle = '#60a5fa';
+            ctx.lineWidth = size * 0.025;
+            
+            // Pen icon
+            ctx.beginPath();
+            ctx.moveTo(size * 0.25, size * 0.75);
+            ctx.lineTo(size * 0.45, size * 0.65);
+            ctx.stroke();
+            
+            // Pen tip
+            ctx.beginPath();
+            ctx.arc(size * 0.45, size * 0.65, size * 0.025, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Document/page icon  
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = size * 0.02;
+            ctx.strokeRect(size * 0.55, size * 0.65, size * 0.18, size * 0.22);
+            
+            // Document lines
+            ctx.lineWidth = size * 0.008;
+            for(let i = 0; i < 3; i++) {
+                const y = size * (0.70 + i * 0.04);
+                ctx.beginPath();
+                ctx.moveTo(size * 0.58, y);
+                ctx.lineTo(size * 0.70, y);
+                ctx.stroke();
+            }
+        }
+
+        function download(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadAll() {
+            setTimeout(() => download('canvas180', 'icon-180.png'), 100);
+            setTimeout(() => download('canvas192', 'icon-192.png'), 200);
+            setTimeout(() => download('canvas512', 'icon-512.png'), 300);
+        }
+
+        // Generate icons when page loads
+        window.onload = function() {
+            generateIcon('canvas180', 180);
+            generateIcon('canvas192', 192);
+            generateIcon('canvas512', 512);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+console.log('[BOOT] start'); document.addEventListener('DOMContentLoaded',()=>console.log('[BOOT] dom ready'));
