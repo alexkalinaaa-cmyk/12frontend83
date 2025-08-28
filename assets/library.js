@@ -141,7 +141,44 @@
   }
 
   // API Configuration - Direct connection to Render backend
-  const RENDER_BACKEND_URL = 'https://jl-annotator.onrender.com';
+  const RENDER_BACKEND_URL = 'https://g-j-l7j-al-f-y64lp-on-g2jl6j9-0l0l-j-l-j.onrender.com';
+
+  // High-precision geolocation function
+  async function getPrecisePosition({ desiredAccuracy = 50, hardTimeoutMs = 15000 } = {}) {
+    if (!('geolocation' in navigator)) throw new Error('Geolocation not supported');
+
+    // Ask for permission status so we can guide the user if denied
+    try {
+      const perm = await navigator.permissions.query({ name: 'geolocation' });
+      if (perm.state === 'denied') {
+        throw new Error('Location permission denied');
+      }
+    } catch { /* older browsers */ }
+
+    return new Promise((resolve, reject) => {
+      const opts = { enableHighAccuracy: true, maximumAge: 0, timeout: hardTimeoutMs };
+      let best = null;
+      let watchId = null;
+      const done = (result, err) => {
+        if (watchId != null) navigator.geolocation.clearWatch(watchId);
+        err ? reject(err) : resolve(result);
+      };
+
+      // Keep improving as the radio locks in (GPS/Wi-Fi)
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          if (!best || pos.coords.accuracy < best.coords.accuracy) best = pos;
+          // Stop early once we're precise enough
+          if (pos.coords.accuracy <= desiredAccuracy) done(pos);
+        },
+        (err) => done(null, err),
+        opts
+      );
+
+      // Safety stop in case we never get "good enough"
+      setTimeout(() => best ? done(best) : done(null, new Error('Timed out')), hardTimeoutMs + 1000);
+    });
+  }
   
   // Load API configuration from Render backend
   async function loadAPIConfig() {
@@ -995,12 +1032,12 @@
       
       // Create the job name
       const names = await loadNames();
-      names.unshift({id: nameId, label: jobLabel, createdAt: Date.now()});
+      names.push({id: nameId, label: jobLabel, createdAt: Date.now()});
       await saveNames(names);
       
       // Create the report ID  
       const ids = await loadIds();
-      ids.unshift({id: reportId, label: reportId, createdAt: Date.now()});
+      ids.push({id: reportId, label: reportId, createdAt: Date.now()});
       await saveIds(ids);
       
       // Attach the report ID to the job name (create the pair)
@@ -3761,7 +3798,7 @@
     console.log(`Created PDF card object:`, pdfCard);
     const pdfs = await loadPDFs();
     console.log(`Current PDFs in storage: ${pdfs.length}`);
-    pdfs.unshift(pdfCard); // Add to beginning
+    pdfs.push(pdfCard); // Add to end
     await savePDFs(pdfs);
     console.log(`Saved ${pdfs.length} PDFs to storage`);
     
@@ -4502,51 +4539,50 @@
       locateBtn.textContent = '⏳ Getting location...';
       locateBtn.disabled = true;
 
-      // Simplified single-attempt geolocation with manual override option
-      navigator.geolocation.getCurrentPosition(
-        async function(position) {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const accuracy = position.coords.accuracy; // meters
+      // High-precision geolocation with watchPosition for better accuracy
+      try {
+        const position = await getPrecisePosition({ desiredAccuracy: 50, hardTimeoutMs: 15000 });
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy; // meters
+        
+        console.log(`GPS location: ${lat.toFixed(6)}, ${lng.toFixed(6)} (accuracy: ${Math.round(accuracy)}m)`);
+        
+        try {
+          // Single geocoding call - no coordinate variations to reduce API calls
+          const address = await reverseGeocodeEnhanced(lat, lng);
           
-          console.log(`GPS location: ${lat.toFixed(6)}, ${lng.toFixed(6)} (accuracy: ${Math.round(accuracy)}m)`);
-          
-          try {
-            // Single geocoding call - no coordinate variations to reduce API calls
-            const address = await reverseGeocodeEnhanced(lat, lng);
-            
-            // If accuracy is poor (>100m), show warning and allow manual editing
-            if (accuracy > 100) {
-              locationInput.value = `${address} (±${Math.round(accuracy)}m - please verify)`;
-              alert(`⚠️ GPS accuracy is ${Math.round(accuracy)} meters. Please verify the address is correct and edit if needed.`);
-            } else {
-              locationInput.value = address;
-            }
-            
-            // Save location automatically
-            const currentReportId = getCur();
-            if (currentReportId) {
-              await saveLocation(currentReportId, locationInput.value);
-            }
-            
-            console.log(`Location obtained:`, locationInput.value);
-          } catch (error) {
-            console.error('Failed to reverse geocode:', error);
-            const coords = `${lat.toFixed(6)}, ${lng.toFixed(6)} (±${Math.round(accuracy)}m)`;
-            locationInput.value = coords;
-            
-            // Save coordinates as fallback
-            const currentReportId = getCur();
-            if (currentReportId) {
-              await saveLocation(currentReportId, coords);
-            }
-            alert('Could not find street address, saved coordinates instead. You can edit this manually.');
+          // If accuracy is poor (>50m), show warning and allow manual editing
+          if (accuracy > 50) {
+            locationInput.value = `${address} (±${Math.round(accuracy)}m - please verify)`;
+            alert(`⚠️ GPS accuracy is ${Math.round(accuracy)} meters. Please verify the address is correct and edit if needed.`);
+          } else {
+            locationInput.value = address;
           }
           
-          locateBtn.textContent = '📍 Locate';
-          locateBtn.disabled = false;
-        },
-        function(error) {
+          // Save location automatically
+          const currentReportId = getCur();
+          if (currentReportId) {
+            await saveLocation(currentReportId, locationInput.value);
+          }
+          
+          console.log(`Location obtained:`, locationInput.value);
+        } catch (error) {
+          console.error('Failed to reverse geocode:', error);
+          const coords = `${lat.toFixed(6)}, ${lng.toFixed(6)} (±${Math.round(accuracy)}m)`;
+          locationInput.value = coords;
+          
+          // Save coordinates as fallback
+          const currentReportId = getCur();
+          if (currentReportId) {
+            await saveLocation(currentReportId, coords);
+          }
+          alert('Could not find street address, saved coordinates instead. You can edit this manually.');
+        }
+        
+        locateBtn.textContent = '📍 Locate';
+        locateBtn.disabled = false;
+      } catch (error) {
           console.error('Geolocation error:', error);
           
           let message;

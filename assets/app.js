@@ -1340,7 +1340,14 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
 
   ["mousedown","touchstart","pointerdown"].forEach(function(ev){ on(inkC, ev, startInk, {passive:false}); });
   ["mousemove","touchmove","pointermove"].forEach(function(ev){ on(inkC, ev, moveInk, {passive:false}); });
-  ["mouseup","mouseleave","touchend","touchcancel","pointerup","pointercancel"].forEach(function(ev){ on(inkC, ev, endInk, {passive:false}); });
+  // End ink on various events - but exclude mouseleave for eraser to allow continuous drawing
+  function endInkHandler(e) {
+    if (tool === "eraser" && (e.type === "mouseleave" || e.type === "pointerleave")) {
+      return; // Don't end eraser drawing when leaving canvas
+    }
+    endInk(e);
+  }
+  ["mouseup","mouseleave","touchend","touchcancel","pointerup","pointercancel"].forEach(function(ev){ on(inkC, ev, endInkHandler, {passive:false}); });
 
   // Eraser overlay event listeners
   ["mousemove","pointermove"].forEach(function(ev){ on(inkC, ev, updateEraserOverlay, {passive:false}); });
