@@ -4471,8 +4471,7 @@
   } else {
     // DOM already loaded
     setTimeout(initializeWorkspace, 100);
-  } 
-  });
+  }
 
   on(UI.btnClearData, "click", async function(){
     const diagnostic = getStorageDiagnostic();
