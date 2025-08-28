@@ -2616,7 +2616,7 @@
     doc.setFontSize(14);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(80, 80, 80);
-    doc.text('Revision A', W/2, revisionYPos, {align: 'center'});
+    // doc.text('Revision A', W/2, revisionYPos, {align: 'center'}); // Removed as requested
     
     if (isConfidential) {
       doc.setFontSize(12);
@@ -2993,7 +2993,7 @@
         
         // Calculate pin image space
         const hasPinImage = !!pinAreaImageData;
-        const pinImageWidth = 300; // Full size 300x118
+        const pinImageWidth = 260; // Reduced size 260x118
         const pinImageHeight = 117;
         const pinImageMargin = 5; // Reduced for better symmetry with textbox borders
         
@@ -3185,6 +3185,16 @@
                 console.log(`[PIN BOUNDS] Page dimensions: ${W}x${H}, pin right edge: ${pinImageX + pinImageWidth}, pin bottom edge: ${pinImageY + pinImageHeight}`);
                 
                 
+                // Add blue border layer (2px larger on all sides) under the pinpoint map
+                const borderWidth = pinImageWidth + 4; // 264px (260 + 4)
+                const borderHeight = pinImageHeight + 4; // 121px (117 + 4)
+                const borderX = pinImageX - 2; // 2px to the left
+                const borderY = pinImageY - 2; // 2px above
+                
+                doc.setFillColor(0, 102, 204); // Blue color #0066CC
+                doc.rect(borderX, borderY, borderWidth, borderHeight, 'F'); // 'F' for filled rectangle
+                console.log(`Added blue border: ${borderWidth}x${borderHeight} at (${borderX},${borderY})`);
+                
                 // Keep original pin image dimensions - DO NOT stretch to fit textbox height
                 doc.addImage(pinAreaImageData, imageFormat, pinImageX, pinImageY, pinImageWidth, pinImageHeight);
                 console.log(`✅ Successfully added pin area image ON TOP of red box: ${pinImageWidth}x${pinImageHeight} at (${pinImageX},${pinImageY}) as ${imageFormat}`);
@@ -3254,6 +3264,15 @@
               
               const pinImageX = boxX + boxWidth - pinImageWidth - pinImageMargin - 0.5;
               const pinImageY = boxY + 1.5;
+              
+              // Add blue border layer (2px larger on all sides) under the pinpoint map
+              const borderWidth = pinImageWidth + 4; // 264px (260 + 4)
+              const borderHeight = pinImageHeight + 4; // 121px (117 + 4)
+              const borderX = pinImageX - 2; // 2px to the left
+              const borderY = pinImageY - 2; // 2px above
+              
+              doc.setFillColor(0, 102, 204); // Blue color #0066CC
+              doc.rect(borderX, borderY, borderWidth, borderHeight, 'F'); // 'F' for filled rectangle
               
               doc.addImage(pinAreaImageData, imageFormat, pinImageX, pinImageY, pinImageWidth, pinImageHeight);
               console.log(`[PIN-ONLY] Successfully rendered pin image for item ${i+1}`);
