@@ -1808,6 +1808,28 @@
       
       return filename;
     }
+
+    // Deduplicate filename against existing PDFs
+    async function deduplicateFilename(baseFilename) {
+      const pdfs = await loadPDFs();
+      const existingFilenames = pdfs.map(pdf => pdf.filename);
+      
+      if (!existingFilenames.includes(baseFilename)) {
+        return baseFilename; // No duplicate
+      }
+      
+      // Find the next available number
+      const baseName = baseFilename.replace(/\.pdf$/i, '');
+      let counter = 1;
+      let newFilename = `${baseName} (${counter}).pdf`;
+      
+      while (existingFilenames.includes(newFilename)) {
+        counter++;
+        newFilename = `${baseName} (${counter}).pdf`;
+      }
+      
+      return newFilename;
+    }
     
     // Update filename display
     function updateFilenameDisplay() {
@@ -1848,7 +1870,8 @@
         }, 500);
         
         document.body.removeChild(modal);
-        await generatePDF(jid, reportNameEntry, items, filename, isConfidential, jobName);
+        const uniqueFilename = await deduplicateFilename(filename);
+        await generatePDF(jid, reportNameEntry, items, uniqueFilename, isConfidential, jobName);
         clearInterval(progressInterval);
       } catch (error) {
         console.error('PDF generation failed:', error);
@@ -4454,12 +4477,12 @@
     
     // Create the job name
     const names = await loadNames();
-    names.unshift({id: nameId, label: jobLabel, createdAt: Date.now()});
+    names.push({id: nameId, label: jobLabel, createdAt: Date.now()});
     await saveNames(names);
     
     // Create the report ID  
     const ids = await loadIds();
-    ids.unshift({id: reportId, label: reportId, createdAt: Date.now()});
+    ids.push({id: reportId, label: reportId, createdAt: Date.now()});
     await saveIds(ids);
     
     // Attach the report ID to the job name (create the pair)
@@ -4595,13 +4618,13 @@
           
           let message;
           switch(error.code) {
-            case error.PERMISSION_DENIED:
+            case 1: // PERMISSION_DENIED
               message = 'Location permission denied. Please enable location access in your browser settings.';
               break;
-            case error.POSITION_UNAVAILABLE:
+            case 2: // POSITION_UNAVAILABLE
               message = 'Your location is currently unavailable. Please try again.';
               break;
-            case error.TIMEOUT:
+            case 3: // TIMEOUT
               message = 'Location request timed out. Please try again.';
               break;
             default:

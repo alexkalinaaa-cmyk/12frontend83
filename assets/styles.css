@@ -187,7 +187,7 @@ img {
 .libgrid { display:grid; grid-template-columns:300px 1fr; gap:12px; min-height:360px; padding:10px; }
 .jobs-pane { border-right:1px solid var(--border); padding-right:10px; display:grid; gap:10px; align-content:start; }
 .report-name-item { margin-bottom:8px; }
-.report-name-btn { background:#dc2626; color:white; border:2px solid #dc2626; border-radius:6px; padding:8px 12px; cursor:pointer; font-size:13px; width:100%; text-align:left; margin-bottom:4px; font-weight:600; min-height:38px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; word-break:break-word; hyphens:auto; -webkit-hyphens:auto; -ms-hyphens:auto; overflow-wrap:break-word; }
+.report-name-btn { background:#dc2626; color:white; border:2px solid #dc2626; border-radius:6px; padding:6px 10px; cursor:pointer; font-size:12px; width:85%; max-width:85%; text-align:center; margin:0 auto; margin-top:-2px; font-weight:600; min-height:32px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; word-break:break-word; hyphens:auto; -webkit-hyphens:auto; -ms-hyphens:auto; overflow-wrap:break-word; position:relative; z-index:2; }
 .report-name-btn:hover { background:#b91c1c; border-color:#b91c1c; }
 .report-name-btn.editing { background:#1a1a1a; color:var(--fg); border:2px solid var(--accent); }
 .report-name-input { background:#1a1a1a; color:var(--fg); border:2px solid var(--accent); border-radius:8px; padding:12px 16px; font-size:16px; width:100%; font-weight:600; }
@@ -349,7 +349,8 @@ img {
 .tray-card-linked:hover { border-color:var(--accent); }
 .pin-indicator { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -55%); z-index: 10; pointer-events: none; 
   /* Ensure pin is properly sized - updated for 1.2x scale */
-  width: 38px; height: 46px;
+  width: 35px; height: 46px;
+  background: #3b82f6; padding: 2px; border-radius: 50%;
 }
 
 @keyframes pulse-border {
