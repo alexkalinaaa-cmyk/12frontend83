@@ -4604,9 +4604,8 @@
           locateBtn.textContent = '📍 Locate';
           locateBtn.disabled = false;
         }
-      }
+      });
     });
-  }
 
 
   window.addEventListener("load", async function(){
