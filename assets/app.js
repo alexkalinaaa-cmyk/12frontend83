@@ -1828,24 +1828,18 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
   
   // Notes button functionality
   on($("#btn-notes"), "click", async function(){
-    const jid = (window.Library && Library.ensureCurrent && await Library.ensureCurrent()) || "";
-    if(!jid) return; // Should be disabled
+    // ensureCurrent will auto-create a report if none exists
     await createNoteCard();
   });
   
   // Update notes button state when job changes
   async function updateNotesButtonState(){
     const notesBtn = $("#btn-notes");
-    const jid = (window.library && window.library.getCurrentReportId && window.library.getCurrentReportId()) || "";
     if(notesBtn) {
-      notesBtn.disabled = !jid;
-      if(!jid) {
-        notesBtn.style.opacity = "0.5";
-        notesBtn.style.cursor = "not-allowed";
-      } else {
-        notesBtn.style.opacity = "1";
-        notesBtn.style.cursor = "pointer";
-      }
+      // Always enable notes button - it will auto-create report if needed
+      notesBtn.disabled = false;
+      notesBtn.style.opacity = "1";
+      notesBtn.style.cursor = "pointer";
     }
   }
   

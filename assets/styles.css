@@ -217,6 +217,35 @@ img {
 .thumb .note-thumb-content { flex:1; display:flex; flex-direction:column; }
 .thumb .note-thumb-icon { flex:1; }
 .thumb .note-thumb-label { height:20px; max-height:20px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Delete button styling for thumb cards (favicon red X design) */
+.thumb .card-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.thumb .card-delete:hover {
+  opacity: 1;
+  background: #b91c1c;
+  transform: scale(1.1);
+}
+
 .thumb.dragging { opacity:.4; }
 .thumb.drop-target { border:2px dashed var(--accent); background:rgba(59, 130, 246, 0.1); }
 .thumb.swap-target { border:2px dashed var(--accent); background:rgba(59, 130, 246, 0.1); }
