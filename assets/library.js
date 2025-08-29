@@ -4574,16 +4574,15 @@
   on(UI.btnClearData, "click", async function(){
     const diagnostic = getStorageDiagnostic();
     
-    const confirmMessage = `This will clear ALL stored data (${diagnostic.totalSizeMB}MB).\n\n` +
-      `Items found:\n${diagnostic.items.slice(0, 5).map(item => `• ${item.key}: ${item.sizeMB}MB`).join('\n')}` +
+    const confirmMessage = `🚨🔥 EMERGENCY RESET WARNING! 🔥🚨\n\n💥 THIS WILL DELETE EVERYTHING! 💥\n\n🗑️ STORAGE TO WIPE: ${diagnostic.totalSizeMB}MB\n\n📋 FILES FOUND:\n${diagnostic.items.slice(0, 5).map(item => `• ${item.key}: ${item.sizeMB}MB`).join('\n')}` +
       `${diagnostic.items.length > 5 ? `\n...and ${diagnostic.items.length - 5} more items` : ''}\n\n` +
       `${diagnostic.corruptedCount > 0 ? `⚠️ ${diagnostic.corruptedCount} corrupted items detected\n\n` : ''}` +
-      `Are you sure you want to continue?`;
+      `⚠️ THIS CANNOT BE UNDONE! ⚠️\n\nContinue with NUCLEAR RESET?`;
     
     if (confirm(confirmMessage)) {
       try {
         const result = await clearAllAppData();
-        alert(`✅ Data cleared successfully!\n\nRemoved:\n• ${result.clearedLocalStorage} localStorage items\n• ${result.corruptedItemsRemoved} corrupted items\n• ${result.previousSize}MB total\n\nStorage should now show 0MB.`);
+        alert(`🚨🔥 EMERGENCY RESET COMPLETE! 🔥🚨\n\n💥 APP WIPED CLEAN! 💥\n\n🗑️ DELETED:\n• ${result.clearedLocalStorage} localStorage items\n• ${result.corruptedItemsRemoved} corrupted items\n• ${diagnostic.totalSizeMB}MB total data\n\n✨ FRESH START! ✨\nApp is now back to factory state!`);
         
         // Refresh the UI
         await renderUnifiedList();
@@ -4593,6 +4592,11 @@
         
         // Clear current report ID
         setCur("");
+        
+        // Update UI controls state after clearing all data
+        if(window.updateUIControlsState) {
+          await window.updateUIControlsState();
+        }
         
       } catch (error) {
         alert(`❌ Error clearing data: ${error.message}`);
