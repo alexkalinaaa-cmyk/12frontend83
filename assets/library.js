@@ -1048,7 +1048,14 @@
       // Update UI to show the newly created report
       await renderUnifiedList();
       await renderCards();
-      if(window.updateUIControlsState) await window.updateUIControlsState();
+      
+      // Ensure UI controls update after library state is fully committed
+      if(window.updateUIControlsState) {
+        // Small delay to ensure setCur has fully processed
+        setTimeout(() => {
+          window.updateUIControlsState();
+        }, 50);
+      }
       
       id = reportId;
     }
