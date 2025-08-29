@@ -1267,7 +1267,7 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
       content: noteContentInput.value.trim()
     });
     
-    if(window.AppBoard) await AppBoard.clearAndRenderFrom(jid);
+    if(window.renderCards) renderCards();
     closeNoteEditor();
   });
   
@@ -1324,7 +1324,7 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
     });
     const img = currentTile.querySelector("img");
     if(img) img.src = rec.composedUrl || rec.baseUrl || rec.url;
-    if(window.AppBoard) await AppBoard.clearAndRenderFrom(jid);
+    if(window.renderCards) renderCards();
     closeEditor();
   });
 
@@ -1564,7 +1564,7 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
       e.stopPropagation();
       const jid = Library.getCur(); if(!jid) return;
       await Library.removeItem(jid, it.id);
-      if(window.AppBoard) await AppBoard.clearAndRenderFrom(jid);
+      if(window.renderCards) renderCards();
     });
     tile.appendChild(del);
     
@@ -1786,7 +1786,7 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
         alert(`Warning: ${failedCount} files could not be uploaded due to storage limits.\n\nCurrent storage usage: ${storageUsed}MB\n\nTo free up space:\n• Delete old cards from the Library\n• Remove unused Report IDs\n• Clear browser cache`);
       }
       
-      if(window.AppBoard) await AppBoard.clearAndRenderFrom(jid);
+      if(window.renderCards) renderCards();
     } catch (error) {
       console.error('Upload failed:', error);
       alert('Upload failed. Please try again with smaller files.');
@@ -1817,7 +1817,7 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
     const addedCard = await window.Library.addItem(jid, id, noteCard);
     if(addedCard) {
       // Refresh the board
-      if(window.AppBoard) await AppBoard.clearAndRenderFrom(jid);
+      if(window.renderCards) renderCards();
       // Open editor for the new note
       const newTile = document.querySelector(`[data-card-id="${id}"]`);
       if(newTile) {
@@ -1852,27 +1852,8 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
   // Initial button state
   updateNotesButtonState().catch(console.warn);
 
-  window.AppBoard = {
-    clearAndRenderFrom: async function(jid){
-      board.innerHTML="";
-      
-      // Clean up any drag state before re-rendering
-      if(window.Library && window.Library.cleanupDragState) {
-        window.Library.cleanupDragState();
-      }
-      
-      const items = (window.Library && Library.loadItems) ? await Library.loadItems(jid) : [];
-      for (const it of items) {
-        const tile = await createTile(it);
-        board.appendChild(tile);
-        // Add new drag system to each tile
-        if(window.Library && Library.addWorkspaceDragToTile){
-          Library.addWorkspaceDragToTile(tile);
-        }
-      }
-      
-      // Update notes button state after rendering
-      updateNotesButtonState();
-    }
-  };
+  // Expose openEditor globally for library.js access
+  window.openEditor = openEditor;
+  window.renderCards = window.Library && window.Library.renderCards || function(){};
+
 })();

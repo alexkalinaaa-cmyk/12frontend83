@@ -1045,6 +1045,10 @@
       setCur(reportId);
       await saveItems(reportId, []);
       
+      // Update UI to show the newly created report
+      await renderUnifiedList();
+      await renderCards();
+      
       id = reportId;
     }
     return id;
@@ -1409,6 +1413,48 @@
     });
   }
 
+  // Function to open editor from library card click
+  function openEditorFromCard(cardElement, item) {
+    // Create a temporary tile element that matches the workspace card structure
+    const tempTile = document.createElement("div");
+    tempTile.className = "tile card";
+    tempTile.setAttribute("data-card-id", item.id);
+    tempTile.style.display = "none"; // Hide it since we only need it for the API
+    
+    if(item.type === "note") {
+      // Create note tile structure
+      tempTile.classList.add("note-tile");
+      const noteIcon = document.createElement("div");
+      noteIcon.className = "note-icon";
+      noteIcon.textContent = "📝";
+      const label = document.createElement("div");
+      label.className = "note-label";
+      tempTile.appendChild(noteIcon);
+      tempTile.appendChild(label);
+    } else {
+      // Create image tile structure
+      const img = document.createElement("img");
+      img.src = item.composedUrl || item.baseUrl || item.url || "";
+      img.alt = item.name || "";
+      tempTile.appendChild(img);
+    }
+    
+    // Temporarily add to document so openEditor can find it
+    document.body.appendChild(tempTile);
+    
+    // Open the editor using the existing openEditor function from app.js
+    if(window.openEditor) {
+      window.openEditor(tempTile);
+    }
+    
+    // Clean up the temporary element after a short delay
+    setTimeout(() => {
+      if (tempTile.parentNode) {
+        tempTile.parentNode.removeChild(tempTile);
+      }
+    }, 100);
+  }
+
   let isRenderingCards = false;
   
   async function renderCards(){
@@ -1528,8 +1574,30 @@
         img.src = (it.composedUrl||it.baseUrl||it.url||""); 
         img.alt = it.name||("Card "+(i+1));
         d.appendChild(img);
-        
       }
+      
+      // Add delete button (red X) 
+      const del = document.createElement("button");
+      del.className = "card-delete";
+      del.textContent = "×";
+      del.addEventListener("click", async function(e) {
+        e.stopPropagation();
+        if(!jid) return;
+        await removeItem(jid, it.id);
+        if(window.renderCards) renderCards();
+      });
+      d.appendChild(del);
+      
+      // Add click-to-open functionality
+      d.addEventListener("click", function(e) {
+        // Don't open if clicking delete button or if dragging
+        if (e.target.classList.contains('card-delete')) return;
+        if (d.classList.contains('dragging')) return;
+        
+        // Find or create the tile element in the workspace and open editor
+        openEditorFromCard(d, it);
+      });
+      
       fragment.appendChild(d); // Add to fragment instead of directly to UI.bucket
     });
     
@@ -5152,5 +5220,8 @@
   } else {
     initializeIndexedDB();
   }
+  
+  // Expose renderCards globally for app.js access
+  window.renderCards = renderCards;
   
 })();

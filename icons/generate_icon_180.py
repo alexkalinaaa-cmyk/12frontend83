@@ -47,14 +47,14 @@ def create_icon_180():
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
         
-        x = (size - text_width) // 2
+        x = (size - text_width) // 2 + 4  # Shift 4px right for better iOS positioning
         y = int(size * 0.45) - text_height // 2
         
         draw.text((x, y), text, fill="white", font=font)
     except Exception as e:
         print(f"Font error: {e}, using basic text")
         # Fallback without custom font
-        draw.text((size//2 - 20, size//2 - 20), "JL", fill="white")
+        draw.text((size//2 - 20 + 4, size//2 - 20), "JL", fill="white")  # Shift 4px right
     
     # Add pen icon
     pen_color = "#60a5fa"
