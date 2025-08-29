@@ -302,8 +302,11 @@
 <div id="pin-popover" class="pin-popover" hidden>
   <div class="pin-popover-content">
     <div id="pin-popover-header" class="pin-popover-header">
-      <div id="pin-color-chip" class="pin-color-chip"></div>
-      <div id="pin-popover-title" class="pin-popover-title">Linked Pin</div>
+      <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+        <div id="pin-color-chip" class="pin-color-chip"></div>
+        <div id="pin-popover-title" class="pin-popover-title">Linked Pin</div>
+      </div>
+      <button id="pin-popover-close" class="pin-popover-close" title="Close">×</button>
     </div>
     <div class="pin-popover-main">
       <div id="pin-popover-card-preview" class="pin-popover-card-preview" hidden>
@@ -361,7 +364,7 @@
     <header class="bar">
       <div>
         <h3 id="floorplans-title" class="title">🏗️ Floor Plans/Archivum</h3>
-        <div id="floorplans-report-id" class="small" style="margin-top:4px; opacity:0.8;"></div>
+        <div id="floorplans-report-id" class="small" style="margin-top:4px; color:#3b82f6; font-weight:normal;"></div>
       </div>
       <div style="display:flex;gap:8px;">
         <button id="floorplans-close" class="btn">Close</button>

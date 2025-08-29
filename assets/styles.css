@@ -390,7 +390,9 @@ img {
 /* Pin Popover */
 .pin-popover { position:absolute; z-index:20000; background:var(--panel); border:1px solid var(--border); border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.4); min-width:300px; max-width:400px; }
 .pin-popover-content { padding:12px; }
-.pin-popover-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.pin-popover-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.pin-popover-close { width:20px; height:20px; background:#dc2626; color:white; border:none; border-radius:50%; cursor:pointer; font-size:12px; line-height:1; display:flex; align-items:center; justify-content:center; opacity:0.9; transition:all 0.2s ease; flex-shrink:0; }
+.pin-popover-close:hover { opacity:1; background:#b91c1c; transform:scale(1.1); }
 .pin-color-chip { width:16px; height:16px; border-radius:50%; border:2px solid #000; flex-shrink:0; }
 .pin-popover-title { font-weight:600; font-size:14px; }
 .pin-popover-main { margin-bottom:8px; }
@@ -409,14 +411,31 @@ img {
 .pdf-viewer-header { display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid var(--border); background:#0a0f1a; }
 .pdf-viewer-title { font-weight:600; color:#e74c3c; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .pdf-viewer-controls { display:flex; gap:8px; flex-shrink:0; }
-.pdf-viewer-content { flex:1; padding:4px; overflow:auto; -webkit-overflow-scrolling:touch; }
+.pdf-viewer-content { 
+  flex:1; 
+  padding:4px; 
+  overflow:auto; 
+  -webkit-overflow-scrolling:touch;
+  /* Enhanced iOS scrolling support */
+  position:relative;
+  height:100%;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+}
 .pdf-viewer-content iframe { 
   width:100%; 
   height:100%; 
   border-radius:8px; 
-  touch-action:auto;
+  /* Enhanced touch support for iOS */
+  touch-action:pan-y pinch-zoom;
   -webkit-overflow-scrolling:touch;
   overflow:auto;
+  /* Force hardware acceleration */
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
+  /* Ensure proper scrolling on iOS */
+  -webkit-scroll-behavior:smooth;
+  scroll-behavior:smooth;
 }
 
 /* Floor Plans/Archivum Modal */

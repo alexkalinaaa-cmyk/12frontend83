@@ -699,7 +699,7 @@
           <div class="floorplan-card-title" title="${floorPlan.filename}">${truncateFilename(floorPlan.filename)}</div>
           <div class="floorplan-card-badge">${plansCount} plans</div>
         </div>
-        <div class="floorplan-card-meta">${new Date(floorPlan.createdAt).toLocaleDateString()} • ${pinsCount} pins</div>
+        <div class="floorplan-card-meta">${pinsCount} pins</div>
         <div class="floorplan-card-preview">
           ${plansCount > 0 ? '<div style="font-size:12px;">Click to view plans</div>' : '<div style="font-size:12px;">Processing...</div>'}
         </div>
@@ -2140,6 +2140,14 @@
     // Set up PDF.js worker
     if (window.pdfjsLib) {
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    }
+    
+    // Set up pin popover close button
+    const pinPopoverClose = $('#pin-popover-close');
+    if (pinPopoverClose) {
+      pinPopoverClose.addEventListener('click', () => {
+        hidePinPopover(true); // Close popover and clear selection
+      });
     }
     
     // Don't restore blob URLs during initialization - wait for report ID to be available

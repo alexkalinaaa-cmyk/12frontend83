@@ -1842,12 +1842,51 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
       notesBtn.style.cursor = "pointer";
     }
   }
+
+  // Update UI controls state based on report ID selection
+  async function updateUIControlsState(){
+    const jid = (window.Library && Library.getCur && Library.getCur()) || "";
+    const hasReportId = !!jid;
+    
+    // Controls that should be disabled without report ID
+    const controlsToManage = [
+      { id: "job-code", type: "input" },
+      { id: "location-field", type: "input" },
+      { id: "locate-btn", type: "button" },
+      { id: "lib-export", type: "button" },
+      { id: "btn-floorplans", type: "button" }
+    ];
+    
+    controlsToManage.forEach(control => {
+      const element = document.getElementById(control.id);
+      if(element) {
+        element.disabled = !hasReportId;
+        if(!hasReportId) {
+          element.style.opacity = "0.5";
+          element.style.cursor = "not-allowed";
+          if(control.type === "input") {
+            element.placeholder = "Select a report first";
+          }
+        } else {
+          element.style.opacity = "1";
+          element.style.cursor = control.type === "input" ? "text" : "pointer";
+          if(control.type === "input" && control.id === "location-field") {
+            element.placeholder = "Enter location or use locate button";
+          } else if(control.type === "input" && control.id === "job-code") {
+            element.placeholder = "Optional";
+          }
+        }
+      }
+    });
+  }
   
   // Initial button state
   updateNotesButtonState().catch(console.warn);
+  updateUIControlsState().catch(console.warn);
 
-  // Expose openEditor globally for library.js access
+  // Expose functions globally for library.js access
   window.openEditor = openEditor;
+  window.updateUIControlsState = updateUIControlsState;
   window.renderCards = window.Library && window.Library.renderCards || function(){};
 
 })();

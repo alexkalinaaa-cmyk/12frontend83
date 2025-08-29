@@ -1048,6 +1048,7 @@
       // Update UI to show the newly created report
       await renderUnifiedList();
       await renderCards();
+      if(window.updateUIControlsState) await window.updateUIControlsState();
       
       id = reportId;
     }
@@ -1126,6 +1127,7 @@
           await renderUnifiedList(); 
           await renderCards();
           await renderPDFCards();
+          if(window.updateUIControlsState) await window.updateUIControlsState();
           
           // Load Job Code for this Report ID
           const jobCodeInput = document.getElementById('job-code');
@@ -3086,8 +3088,8 @@
         
         // Calculate pin image space
         const hasPinImage = !!pinAreaImageData;
-        const pinImageWidth = 260; // Reduced size 260x118
-        const pinImageHeight = 117;
+        const pinImageWidth = 249; // Adjusted for 765px canvas width (35px less than 800px)
+        const pinImageHeight = 117; // Keep height the same
         const pinImageMargin = 5; // Reduced for better symmetry with textbox borders
         
         // Calculate available text width (subtract pin image space if present)
@@ -3278,15 +3280,15 @@
                 console.log(`[PIN BOUNDS] Page dimensions: ${W}x${H}, pin right edge: ${pinImageX + pinImageWidth}, pin bottom edge: ${pinImageY + pinImageHeight}`);
                 
                 
-                // Add blue border layer (2px larger on all sides) under the pinpoint map
-                const borderWidth = pinImageWidth + 4; // 264px (260 + 4)
-                const borderHeight = pinImageHeight + 4; // 121px (117 + 4)
-                const borderX = pinImageX - 2; // 2px to the left
-                const borderY = pinImageY - 2; // 2px above
+                // Add enhanced blue border layer (3px larger on all sides) under the pinpoint map
+                const borderWidth = pinImageWidth + 6; // Enhanced border (249 + 6 = 255)
+                const borderHeight = pinImageHeight + 6; // Enhanced border (117 + 6 = 123)
+                const borderX = pinImageX - 3; // 3px to the left for better visibility
+                const borderY = pinImageY - 3; // 3px above for better visibility
                 
-                doc.setFillColor(0, 102, 204); // Blue color #0066CC
+                doc.setFillColor(59, 130, 246); // Modern blue color #3B82F6 (matches report ID styling)
                 doc.rect(borderX, borderY, borderWidth, borderHeight, 'F'); // 'F' for filled rectangle
-                console.log(`Added blue border: ${borderWidth}x${borderHeight} at (${borderX},${borderY})`);
+                console.log(`Added enhanced blue border: ${borderWidth}x${borderHeight} at (${borderX},${borderY})`);
                 
                 // Keep original pin image dimensions - DO NOT stretch to fit textbox height
                 doc.addImage(pinAreaImageData, imageFormat, pinImageX, pinImageY, pinImageWidth, pinImageHeight);
@@ -3358,13 +3360,13 @@
               const pinImageX = boxX + boxWidth - pinImageWidth - pinImageMargin - 0.5;
               const pinImageY = boxY + 1.5;
               
-              // Add blue border layer (2px larger on all sides) under the pinpoint map
-              const borderWidth = pinImageWidth + 4; // 264px (260 + 4)
-              const borderHeight = pinImageHeight + 4; // 121px (117 + 4)
-              const borderX = pinImageX - 2; // 2px to the left
-              const borderY = pinImageY - 2; // 2px above
+              // Add enhanced blue border layer (3px larger on all sides) under the pinpoint map
+              const borderWidth = pinImageWidth + 6; // Enhanced border (249 + 6 = 255)
+              const borderHeight = pinImageHeight + 6; // Enhanced border (117 + 6 = 123)
+              const borderX = pinImageX - 3; // 3px to the left for better visibility
+              const borderY = pinImageY - 3; // 3px above for better visibility
               
-              doc.setFillColor(0, 102, 204); // Blue color #0066CC
+              doc.setFillColor(59, 130, 246); // Modern blue color #3B82F6 (matches report ID styling)
               doc.rect(borderX, borderY, borderWidth, borderHeight, 'F'); // 'F' for filled rectangle
               
               doc.addImage(pinAreaImageData, imageFormat, pinImageX, pinImageY, pinImageWidth, pinImageHeight);
@@ -3950,7 +3952,7 @@
       const reportIdDisplay = document.getElementById('floorplans-report-id');
       const currentJobId = getCur();
       if (reportIdDisplay && currentJobId) {
-        reportIdDisplay.textContent = `Working in Report ID: ${currentJobId}`;
+        reportIdDisplay.innerHTML = `Working in Report ID: <strong>${currentJobId}</strong>`;
       }
       
       floorplansOverlay.removeAttribute('hidden');
@@ -4415,10 +4417,12 @@
         await renderCards();
         await renderPDFCards();
         await renderUnifiedList(); // Update UI immediately after auto-selection
+        if(window.updateUIControlsState) await window.updateUIControlsState();
       } else {
         // Only clear current if no reports exist
         setCur(""); 
         document.getElementById("board").innerHTML = "";
+        if(window.updateUIControlsState) await window.updateUIControlsState();
         
         // Clear Job Code input when no Report ID is selected
         const jobCodeInput = document.getElementById('job-code');
@@ -4540,7 +4544,7 @@
       const reportIdDisplay = document.getElementById('floorplans-report-id');
       const currentJobId = getCur();
       if (reportIdDisplay && currentJobId) {
-        reportIdDisplay.textContent = `Working in Report ID: ${currentJobId}`;
+        reportIdDisplay.innerHTML = `Working in Report ID: <strong>${currentJobId}</strong>`;
       }
       
       floorplansOverlay.removeAttribute('hidden');
@@ -5013,15 +5017,15 @@
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Set crop dimensions - adjusted for tighter pin bounds
-            const cropWidth = 1106; // Reduced by 10px total (5px left + 5px right)
-            const cropHeight = 703;  // Reduced by 1px from top
+            // Set crop dimensions - zoom out by ~5% for better context and decrease left width by 35px
+            const cropWidth = Math.round(1106 * 1.05); // Zoom out 5% = ~1161px
+            const cropHeight = Math.round(703 * 1.05);  // Zoom out 5% = ~738px
             
-            // Final canvas size - dramatically increased for ultra-high quality in PDF export
-            const dpr = Math.max(3, window.devicePixelRatio || 1); // Force at least 3x resolution
-            canvas.width = 800 * dpr;  // Now 2400px with 3x DPR
-            canvas.height = 400 * dpr; // Now 1200px with 3x DPR
-            canvas.style.width = '800px';
+            // Final canvas size - increased resolution for crystal clear screenshots
+            const dpr = Math.max(4, window.devicePixelRatio || 1); // Force at least 4x resolution for clarity
+            canvas.width = 765 * dpr;  // Reduced width by 35px (800-35=765), then scaled by DPR
+            canvas.height = 400 * dpr; // Keep height, scaled by DPR
+            canvas.style.width = '765px';  // Reduced by 35px for text space
             canvas.style.height = '400px';
             
             // Scale context for ultra-high-DPI rendering
@@ -5036,31 +5040,31 @@
               const pinX = pin.x * imgWidth;
               const pinY = pin.y * imgHeight;
               
-              // Calculate crop area (centered on pin, adjusted for tighter bounds)
-              const cropX = pinX - cropWidth / 2 + 5; // Shift 5px right to crop from left edge
-              const cropY = pinY - cropHeight / 2 + 1; // Shift 1px down to crop from top
+              // Calculate crop area (centered on pin, shifted left for text space)
+              const cropX = pinX - cropWidth / 2 - 35; // Shift 35px left to make room for text
+              const cropY = pinY - cropHeight / 2; // Center vertically
               
               // Ensure crop area is within image bounds
               const adjustedCropX = Math.max(0, Math.min(imgWidth - cropWidth, cropX));
               const adjustedCropY = Math.max(0, Math.min(imgHeight - cropHeight, cropY));
               
-              // Enable high-quality image smoothing
+              // Enable highest quality image smoothing
               ctx.imageSmoothingEnabled = true;
               ctx.imageSmoothingQuality = 'high';
               
               // Fill with white background first (in case crop goes beyond image)
               ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, 800, 400);
+              ctx.fillRect(0, 0, 765, 400);
               
-              // Draw the cropped portion scaled down to canvas size (creates wide view)
+              // Draw the cropped portion scaled to new canvas size (crystal clear)
               ctx.drawImage(
                 img,
                 adjustedCropX, adjustedCropY, cropWidth, cropHeight,
-                0, 0, 800, 400  // Increased dimensions for higher quality
+                0, 0, 765, 400  // New dimensions with 35px less width
               );
           
-              // Draw the pin itself on the scaled image (account for scaling)
-              const pinCanvasX = (pinX - adjustedCropX) * (800 / cropWidth);
+              // Draw the pin itself on the scaled image (account for new scaling)
+              const pinCanvasX = (pinX - adjustedCropX) * (765 / cropWidth);
               const pinCanvasY = (pinY - adjustedCropY) * (400 / cropHeight);
               
               // Pin shaft (black line) - scaled up by 1.5x for larger pin with crisp rendering
