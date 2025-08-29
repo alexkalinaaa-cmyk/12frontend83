@@ -1718,17 +1718,11 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
   }
 
   async function addFiles(files){
-    console.log('=== addFiles() called with files:', files ? files.length : 'null');
     const jid = (window.Library && Library.ensureCurrent && await Library.ensureCurrent()) || "";
-    console.log('=== addFiles() ensureCurrent returned jid:', jid);
     
     // Update UI controls after ensuring report exists (may have auto-created)
     if(window.updateUIControlsState) {
-      console.log('=== addFiles() calling updateUIControlsState...');
       await window.updateUIControlsState();
-      console.log('=== addFiles() updateUIControlsState completed');
-    } else {
-      console.error('=== addFiles() window.updateUIControlsState not found!');
     }
     
     const existingItems = (window.Library && Library.loadItems) ? await Library.loadItems(jid) : [];
@@ -1805,7 +1799,6 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
     }
   }
   on($("#file-input"), "change", async function(e){ 
-    console.log('=== File input change event triggered, files:', e.target.files ? e.target.files.length : 'none');
     await addFiles(e.target.files); 
     e.target.value = ""; // Clear input to allow same file upload again
   });

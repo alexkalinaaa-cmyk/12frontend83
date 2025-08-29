@@ -4627,6 +4627,9 @@
     await renderCards();
     await renderPDFCards();
     
+    // Update UI controls after creating new report
+    if(window.updateUIControlsState) await window.updateUIControlsState();
+    
     // Clear Job Code input for new Report ID
     const jobCodeInput = document.getElementById('job-code');
     if (jobCodeInput) {
