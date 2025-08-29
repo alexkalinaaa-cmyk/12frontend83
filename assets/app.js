@@ -1719,6 +1719,10 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
 
   async function addFiles(files){
     const jid = (window.Library && Library.ensureCurrent && await Library.ensureCurrent()) || "";
+    
+    // Update UI controls after ensuring report exists (may have auto-created)
+    if(window.updateUIControlsState) await window.updateUIControlsState();
+    
     const existingItems = (window.Library && Library.loadItems) ? await Library.loadItems(jid) : [];
     const existingNames = existingItems.map(item => item.name || '');
     
@@ -1803,6 +1807,9 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
   async function createNoteCard(){
     const jid = (window.Library && Library.ensureCurrent && await Library.ensureCurrent()) || "";
     if(!jid) return; // Button should be disabled, but double-check
+    
+    // Update UI controls after ensuring report exists (may have auto-created)
+    if(window.updateUIControlsState) await window.updateUIControlsState();
     
     const id = generateUniqueId();
     const noteCard = {
