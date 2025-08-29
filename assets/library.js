@@ -189,12 +189,12 @@
       } else {
         console.warn('[Config] Failed to load API config from Render backend');
         // Fallback API key if config fails
-        window.API_KEY = '417739249b8bccdce71c7099eff84f29';
+        window.API_KEY = '9218fa957118b88af708346a404ce0d9';
       }
     } catch (error) {
       console.warn('[Config] Error loading API config from Render backend:', error);
       // Fallback API key if config fails
-      window.API_KEY = '417739249b8bccdce71c7099eff84f29';
+      window.API_KEY = '9218fa957118b88af708346a404ce0d9';
     }
   }
 
@@ -474,7 +474,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': window.API_KEY || '417739249b8bccdce71c7099eff84f29'
+          'x-api-key': window.API_KEY || '9218fa957118b88af708346a404ce0d9'
         },
         body: JSON.stringify({
           fileName: pdf.filename,
