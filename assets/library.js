@@ -139,7 +139,7 @@
   }
 
   // API Configuration - Direct connection to Render backend
-  const RENDER_BACKEND_URL = 'https://g-j-l7j-al-f-y64lp-on-g2jl6j9-0l0l-j-l-j.onrender.com';
+  const RENDER_BACKEND_URL = 'https://nine4backend53.onrender.com';
 
   // High-precision geolocation function
   async function getPrecisePosition({ desiredAccuracy = 50, hardTimeoutMs = 15000 } = {}) {
