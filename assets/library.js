@@ -1051,10 +1051,9 @@
       
       // Ensure UI controls update after library state is fully committed
       if(window.updateUIControlsState) {
-        // Small delay to ensure setCur has fully processed
-        setTimeout(() => {
-          window.updateUIControlsState();
-        }, 50);
+        console.log('About to call updateUIControlsState, current report ID:', getCur());
+        // Call immediately - setCur is synchronous and should be complete
+        await window.updateUIControlsState();
       }
       
       id = reportId;

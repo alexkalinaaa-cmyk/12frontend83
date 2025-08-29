@@ -1848,6 +1848,8 @@ window.addEventListener('resize', function(){ if(!editor.hasAttribute('hidden'))
     const jid = (window.Library && Library.getCur && Library.getCur()) || "";
     const hasReportId = !!jid;
     
+    console.log('updateUIControlsState called:', { jid, hasReportId });
+    
     // Controls that should be disabled without report ID
     const controlsToManage = [
       { id: "job-code", type: "input" },
