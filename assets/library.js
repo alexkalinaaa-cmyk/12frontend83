@@ -1583,8 +1583,28 @@
       del.addEventListener("click", async function(e) {
         e.stopPropagation();
         if(!jid) return;
-        await removeItem(jid, it.id);
-        if(window.renderCards) renderCards();
+        
+        // Create meaningful confirmation message based on card type
+        let confirmMessage;
+        if(it.type === "note") {
+          const noteItems = items.filter(item => item.type === "note");
+          const noteIndex = noteItems.findIndex(item => item.id === it.id);
+          const letter = generateLibraryLetter(noteIndex);
+          if(it.name && it.name.trim()) {
+            confirmMessage = `Delete General Notes ${letter}. "${it.name.trim()}"?\n\nThis action cannot be undone.`;
+          } else {
+            confirmMessage = `Delete General Notes ${letter}?\n\nThis action cannot be undone.`;
+          }
+        } else {
+          const cardName = it.name || `Card ${items.indexOf(it) + 1}`;
+          confirmMessage = `Delete "${cardName}"?\n\nThis action cannot be undone.`;
+        }
+        
+        // Show confirmation dialog
+        if(confirm(confirmMessage)) {
+          await removeItem(jid, it.id);
+          if(window.renderCards) renderCards();
+        }
       });
       d.appendChild(del);
       

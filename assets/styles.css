@@ -66,7 +66,7 @@ html,body {
 .hint { opacity:.7; font-size:12px; }
 .small { font-size:12px; opacity:.75; }
 
-.board { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px; }
+.board { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:8px; }
 .tile.card { background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden; position:relative; touch-action:auto; height:200px; -webkit-touch-callout:none; -webkit-user-select:none; }
 
 /* iOS drag prevention for all draggable elements - but allow full touch interaction */
